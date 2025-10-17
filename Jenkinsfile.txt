@@ -108,3 +108,23 @@ pipeline {
         }
     }
 }
+pipeline {
+  agent any
+  stages {
+    stage('Build') {
+      steps {
+        sh './mvnw clean install'
+      }
+    }
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('MySonarQube') {
+          sh './mvnw sonar:sonar \
+            -Dsonar.projectKey=myapp \
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=$SONAR_TOKEN'
+        }
+      }
+    }
+  }
+}
